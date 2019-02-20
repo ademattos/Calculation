@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var num1: UILabel!
     @IBOutlet var num2: UILabel!
     @IBOutlet var symbol: UILabel!
@@ -58,9 +58,13 @@ class ViewController: UIViewController {
             }
         }
         
-        num1.text = String(arc4random_uniform(999))
-        num2.text = String(arc4random_uniform(999))
-        symbol.text = opertaions[currentOperationIndex+1]
+        num1.text = String(arc4random_uniform(99))
+        num2.text = String(arc4random_uniform(99))
+        currentOperationIndex += 1
+        if currentOperationIndex == opertaions.count {
+            currentOperationIndex = 0
+        }
+        symbol.text = opertaions[currentOperationIndex]
     }
     
     let opertaions: [String] = [
@@ -70,12 +74,35 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        num1.text = String(arc4random_uniform(999))
-        num2.text = String(arc4random_uniform(999))
+        num1.text = String(arc4random_uniform(99))
+        num2.text = String(arc4random_uniform(99))
         symbol.text = opertaions[currentOperationIndex]
         // Do any additional setup after loading the view, typically from a nib.
     }
-
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let allowedCharacterSet = CharacterSet(charactersIn: "0123456789.")
+        let replacementStringCharacterSet = CharacterSet(charactersIn: string)
+        
+        if !replacementStringCharacterSet.isSubset(of: allowedCharacterSet){
+            print("Rejected (Invalid Character)")
+            return false
+        }
+        
+        let existingTextHasDecimalSeperator = textField.text?.range(of: ".")
+        let replacementTextHasDecimalSeperator = string.range(of: ".")
+        
+        if existingTextHasDecimalSeperator != nil, replacementTextHasDecimalSeperator != nil {
+            return false
+        }
+        else {
+            return true
+        }
+    }
+    
+    @IBAction func dismissKeyboard(_ sender: UITapGestureRecognizer){
+        textField.resignFirstResponder()
+    }
 
 }
 
