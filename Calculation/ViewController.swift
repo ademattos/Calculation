@@ -13,6 +13,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var num2: UILabel!
     @IBOutlet var symbol: UILabel!
     @IBOutlet var check: UILabel!
+    @IBOutlet var score: UILabel!
     @IBOutlet var textField: UITextField!
     
     @IBAction func checkingIfAnswerIsCorrect(_ textField: UITextField){
@@ -48,23 +49,32 @@ class ViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    var currentQuestionIndex = 1
+    var quizScore = 0
+    
+    @IBAction func showNextQuestion(_ sender: UIButton){
+        currentQuestionIndex += 1
+        if currentQuestionIndex < 11 {
+            num1.text = String(Int(arc4random_uniform(UInt32(20 - (-10) + 1))) + (-10))
+            num2.text = String(Int(arc4random_uniform(UInt32(20 - (-10) + 1))) + (-10))
+            symbol.text = opertaions[Int(arc4random_uniform(4))]
+        } else {
+            print("Quiz Over")
+        }
+        textField.text = ""
+    }
+    
     @IBAction func submit(_ sender: UIButton){
         if let text = textField.text, let value = Int(text){
             let switchs = calculcation(value)
             if switchs == true {
+                quizScore += 10
                 check.text = "Correct"
+                score.text = "\(quizScore)%"
             }else {
                 check.text = "Incorrect"
             }
         }
-        
-        num1.text = String(arc4random_uniform(99))
-        num2.text = String(arc4random_uniform(99))
-        currentOperationIndex += 1
-        if currentOperationIndex == opertaions.count {
-            currentOperationIndex = 0
-        }
-        symbol.text = opertaions[currentOperationIndex]
     }
     
     let opertaions: [String] = [
@@ -74,14 +84,15 @@ class ViewController: UIViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        num1.text = String(arc4random_uniform(99))
-        num2.text = String(arc4random_uniform(99))
-        symbol.text = opertaions[currentOperationIndex]
+        
+        num1.text = String(Int(arc4random_uniform(UInt32(20 - (-10) + 1))) + (-10))
+        num2.text = String(Int(arc4random_uniform(UInt32(20 - (-10) + 1))) + (-10))
+        symbol.text = opertaions[Int(arc4random_uniform(4))]
         // Do any additional setup after loading the view, typically from a nib.
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let allowedCharacterSet = CharacterSet(charactersIn: "0123456789.")
+        let allowedCharacterSet = CharacterSet(charactersIn: "-0123456789.")
         let replacementStringCharacterSet = CharacterSet(charactersIn: string)
         
         if !replacementStringCharacterSet.isSubset(of: allowedCharacterSet){
