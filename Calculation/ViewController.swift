@@ -14,8 +14,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var symbol: UILabel!
     @IBOutlet var check: UILabel!
     @IBOutlet var score: UILabel!
+    @IBOutlet var QNum: UILabel!
     @IBOutlet var textField: UITextField!
     
+    /*
     @IBAction func checkingIfAnswerIsCorrect(_ textField: UITextField){
         if let text = textField.text, let value = Int(text){
             let switchs = calculcation(value)
@@ -26,8 +28,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
+ */
     
-    func calculcation(_ value: Int) -> Bool{
+    func calculcation(_ value: Int) -> Int {
         let number1 = Int(num1.text!)
         let number2 = Int(num2.text!)
         let operation = Character(symbol.text!)
@@ -42,11 +45,15 @@ class ViewController: UIViewController, UITextFieldDelegate {
             answer = number1! / number2!
         }
         
+        return answer
+        
+        /*
         if value == answer {
             return true
         } else {
             return false
         }
+ */
     }
     
     var currentQuestionIndex = 1
@@ -55,24 +62,52 @@ class ViewController: UIViewController, UITextFieldDelegate {
     @IBAction func showNextQuestion(_ sender: UIButton){
         currentQuestionIndex += 1
         if currentQuestionIndex < 11 {
+            QNum.text = "Question: \(currentQuestionIndex)"
             num1.text = String(Int(arc4random_uniform(UInt32(20 - (-10) + 1))) + (-10))
             num2.text = String(Int(arc4random_uniform(UInt32(20 - (-10) + 1))) + (-10))
             symbol.text = opertaions[Int(arc4random_uniform(4))]
         } else {
+            switch quizScore {
+            case 60:
+                score.text = "60%, failed"
+            case 70:
+                score.text = "70%, Passed with a C"
+            case 80:
+                score.text = "80%, Congrats on the B"
+            case 90:
+                score.text = "90%, You got an A!"
+            case 100:
+                score.text = "100%, Perfect Score!!"
+            default:
+                score.text = "Grade lower than 60%"
+            }
             print("Quiz Over")
         }
         textField.text = ""
     }
     
+    @IBAction func restart(_ sender: UIButton){
+        currentQuestionIndex = 1
+        quizScore = 0
+        score.text = "Score"
+        check.text = "Correct/Incorrect"
+        textField.text = ""
+        QNum.text = "Question: \(currentQuestionIndex)"
+        num1.text = String(Int(arc4random_uniform(UInt32(20 - (-10) + 1))) + (-10))
+        num2.text = String(Int(arc4random_uniform(UInt32(20 - (-10) + 1))) + (-10))
+        symbol.text = opertaions[Int(arc4random_uniform(4))]
+    }
+    
     @IBAction func submit(_ sender: UIButton){
         if let text = textField.text, let value = Int(text){
             let switchs = calculcation(value)
-            if switchs == true {
+            if value == switchs {
                 quizScore += 10
                 check.text = "Correct"
-                score.text = "\(quizScore)%"
+                score.text = "\(quizScore)/\(currentQuestionIndex)0"
             }else {
-                check.text = "Incorrect"
+                check.text = "Incorrect, answer is \(switchs)"
+                score.text = "\(quizScore)/\(currentQuestionIndex)0"
             }
         }
     }
@@ -85,6 +120,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        QNum.text = "Question: \(currentQuestionIndex)"
         num1.text = String(Int(arc4random_uniform(UInt32(20 - (-10) + 1))) + (-10))
         num2.text = String(Int(arc4random_uniform(UInt32(20 - (-10) + 1))) + (-10))
         symbol.text = opertaions[Int(arc4random_uniform(4))]
